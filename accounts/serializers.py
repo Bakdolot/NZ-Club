@@ -154,7 +154,9 @@ class SetNewPasswordSerializer(serializers.Serializer):
 class TokenPairObtainSerializer(serializers.Serializer):
     default_error_messages = {
         'no_active_account': _(
-            'No active account found with the given credentials')
+            'No active account found with the given credentials'),
+        'wrong_password': _('You entered the wrong password'),
+        'wrong_phone_number': _('You entered the wrong phone number')
     }
     phone = serializers.CharField(required=False)
     password = PasswordField()
@@ -184,7 +186,14 @@ class TokenPairObtainSerializer(serializers.Serializer):
         password = attrs.get('password', '')
         request = self.context.get('request')
         user = authenticate(request=request, phone=phone, password=password)
+        checking = get_user_model().objects.filter(phone=phone)
         if not getattr(login_rule, user_eligible_for_login)(user):
+            if not checking.exists():
+                raise AuthenticationFailed(self.error_messages['wrong_phone_number'],
+                                       'wrong_phone_number')
+            elif not checking.first().check_password(password):
+                raise AuthenticationFailed(self.error_messages['wrong_password'],
+                                       'wrong_password')
             raise AuthenticationFailed(self.error_messages['no_active_account'],
                                        'no_active_account')
         refresh = self.get_token(user)
