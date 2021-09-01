@@ -137,7 +137,7 @@ class SeasonalApartment(models.Model):
 
     views = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                    related_name='apartment_views',
-                                   verbose_name="Просмотров")
+                                   verbose_name="Просмотров", through='ApartmentViews')
     watched_videos = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                             related_name='watcher')
     favorites = models.ManyToManyField(settings.AUTH_USER_MODEL,

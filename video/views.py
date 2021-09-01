@@ -6,11 +6,13 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import pagination
 from rest_framework.views import APIView
+from rest_framework import filters
 
 from .serializers import *
 from video.models import *
 from rest_framework.generics import *
 from django.db.models import Q
+from django_filters import rest_framework
 
 
 # list get API
@@ -21,36 +23,34 @@ class CategoriesView(viewsets.generics.ListAPIView):
 
 class VideoTrainingView(viewsets.generics.ListAPIView):
     serializer_class = VideoTrainingSerializer
-    queryset = VideoTraining.objects.all().order_by('id').reverse()
+    queryset = VideoTraining.objects.all().order_by('-id')
 
 
 class VideosView(viewsets.generics.ListAPIView):
     serializer_class = VideoSerializer
+    filter_backends = [rest_framework.DjangoFilterBackend, filters.SearchFilter]
+    search_fields = ['title']
+    filterset_fields = ['type', 'owner__profile__region']
+
 
     # pagination_class = MyPagination
 
     def get_queryset(self):
-        print(self.request.user)
         user = get_user_model().objects.get(id=self.request.user.id)
         if user:
-            queryset = Video.objects.raw(f'''
-                                            select vv.*
-                                            from video_video vv 
-                                            left join (
-                                                select * from video_videoviews 
-                                                where user_id={user.id}
-                                                )q on vv.id=q.video_id 
-                                            where (
-                                                case when q.create_at is null 
-                                                then vv.is_top=false
-                                                else vv.is_top=true or vv.is_top=false end
-                                                ) and vv.is_active=true
-                                            order by (
-                                                case when q.create_at is null 
-                                                then vv.create_at 
-                                                else q.create_at end
-                                                ) desc
-                                            ''')
+            queryset = Video.objects.filter(Q(is_active=True) | Q(views__in=[user])).extra(
+                select={'ordering': '''(
+                                                case when video_videoviews.create_at is null 
+                                                then video_video.create_at 
+                                                else video_videoviews.create_at end)'''},
+                where=['''(
+                                                case when video_videoviews.create_at is null 
+                                                then video_video.is_top=false
+                                                else video_video.is_top=true or video_video.is_top=false end
+                                                ) and video_video.is_active=true'''],
+                order_by=['''-ordering''']
+            )
+            
             return queryset
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -115,7 +115,7 @@ class VideoByCategoryView(viewsets.generics.ListAPIView):
 
     def get_queryset(self):
         queryset = Video.objects.filter(
-            category=self.kwargs['category_id']).order_by('create_at').reverse()
+            category=self.kwargs['category_id']).order_by('-create_at')
         return queryset
 
 
@@ -223,7 +223,7 @@ class UserFullyWatchedView(viewsets.generics.UpdateAPIView):
             if request.data['view']:
                 bonus = 0
                 for item in video.tariffs.all():
-                    if item.views > video.videoviews__set.count():
+                    if item.views > video.watched_videos.count():
                         bonus = item.price
                         break
 
@@ -262,7 +262,8 @@ class UserNotFullyWatchedView(viewsets.generics.UpdateAPIView):
         user = get_user_model().objects.get(id=request.data['user_id'])
         if video and user:
             if request.data['view']:
-                VideoViews.objects.create(user=user, video=video)
+                # VideoViews.objects.create(user=user, video=video)
+                video.views.add(user)
 
             if request.data['favorite']:
                 video.favorites.add(user)

@@ -6,7 +6,7 @@ urlpatterns = [
     path('create/cash_box', CreateCashBoxView.as_view()),
     path('create/promo_code', CreatePromoCodeView.as_view()),
     path('transfer/receive', ReceiveTransferView.as_view()),
-    path('transfer/history/<int:user_id>/<str:from_date>/<str:before_date>',
+    path('transfer/history/<int:user_id>/',
          TransferHistoryUserView.as_view()),
     path('transfer/history/detail/<int:trans_id>', TransferHistoryDetailView.as_view()),
     path('cash_box/history/<int:user_id>/<str:from_date>/<str:before_date>',

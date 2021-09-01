@@ -1,3 +1,5 @@
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.generics import *
 from rest_framework.views import APIView
@@ -143,12 +145,25 @@ class ApartmentSearchView(ListAPIView):
 
 class ApartmentView(ListAPIView):
     serializer_class = SeasonalApartmentSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    search_fields = ['name']
+    filterset_fields = ['category', 'owner__profile__region', 'city']
+
 
     def get_queryset(self):
         user = self.request.user
         if user:
-            queryset = SeasonalApartment.objects.filter(
-                Q(is_checked=True) | Q(views__in=[user])).distinct().reverse()
+            queryset = SeasonalApartment.objects.filter(Q(is_checked=True) | Q(views__in=[user])).extra(
+                select={'ordering': '''(
+                case
+                    when seasonal_apartmentviews.create_at is null 
+                        then seasonal_seasonalapartment.create_at 
+                    else seasonal_apartmentviews.create_at 
+                end
+                )'''},
+                order_by=['-ordering']
+
+            )
             return queryset
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
