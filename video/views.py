@@ -28,9 +28,9 @@ class VideoTrainingView(viewsets.generics.ListAPIView):
 
 class VideosView(viewsets.generics.ListAPIView):
     serializer_class = VideoSerializer
-    filter_backends = [rest_framework.DjangoFilterBackend, filters.SearchFilter]
-    search_fields = ['title']
-    filterset_fields = ['type', 'owner__profile__region']
+    # filter_backends = [rest_framework.DjangoFilterBackend, filters.SearchFilter]
+    # search_fields = ['title']
+    # filterset_fields = ['type', 'owner__profile__region']
 
 
     # pagination_class = MyPagination
@@ -38,18 +38,37 @@ class VideosView(viewsets.generics.ListAPIView):
     def get_queryset(self):
         user = get_user_model().objects.get(id=self.request.user.id)
         if user:
-            queryset = Video.objects.filter(Q(is_active=True) | Q(views__in=[user])).extra(
-                select={'ordering': '''(
-                                                case when video_videoviews.create_at is null 
-                                                then video_video.create_at 
-                                                else video_videoviews.create_at end)'''},
-                where=['''(
-                                                case when video_videoviews.create_at is null 
-                                                then video_video.is_top=false
-                                                else video_video.is_top=true or video_video.is_top=false end
-                                                ) and video_video.is_active=true'''],
-                order_by=['''-ordering''']
-            )
+            # queryset = Video.objects.filter(Q(is_active=True) | Q(views__in=[user])).distinct().extra(
+            #     select={'ordering': '''(
+            #                                     case when video_videoviews.create_at is null 
+            #                                     then video_video.create_at 
+            #                                     else video_videoviews.create_at end)'''},
+            #     where=['''(
+            #                                     case when video_videoviews.create_at is null 
+            #                                     then video_video.is_top=false
+            #                                     else video_video.is_top=true or video_video.is_top=false end
+            #                                     ) and video_video.is_active=true'''],
+            #     order_by=['''-ordering''']
+            # )
+
+            queryset = Video.objects.raw(f'''
+            select vv.*
+            from video_video vv 
+            left join (
+                select * from video_videoviews 
+                where user_id={user.id}
+                )q on vv.id=q.video_id 
+            where (
+                case when q.create_at is null 
+                then vv.is_top=false
+                else vv.is_top=true or vv.is_top=false end
+                ) and vv.is_active=true
+            order by (
+                case when q.create_at is null 
+                then vv.create_at 
+                else q.create_at end
+                ) desc;
+            ''')
             
             return queryset
         else:

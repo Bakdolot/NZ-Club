@@ -145,25 +145,48 @@ class ApartmentSearchView(ListAPIView):
 
 class ApartmentView(ListAPIView):
     serializer_class = SeasonalApartmentSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    search_fields = ['name']
-    filterset_fields = ['category', 'owner__profile__region', 'city']
+    # filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    # search_fields = ['name']
+    # filterset_fields = ['category', 'owner__profile__region', 'city']
 
 
     def get_queryset(self):
         user = self.request.user
         if user:
-            queryset = SeasonalApartment.objects.filter(Q(is_checked=True) | Q(views__in=[user])).extra(
-                select={'ordering': '''(
-                case
-                    when seasonal_apartmentviews.create_at is null 
-                        then seasonal_seasonalapartment.create_at 
-                    else seasonal_apartmentviews.create_at 
-                end
-                )'''},
-                order_by=['-ordering']
+            # queryset = SeasonalApartment.objects.filter(Q(is_checked=True) | Q(views__in=[user])).extra(
+            #     select={'ordering': '''(
+            #     case
+            #         when seasonal_apartmentviews.create_at is null 
+            #             then seasonal_seasonalapartment.create_at 
+            #         else seasonal_apartmentviews.create_at 
+            #     end
+            #     )'''},
+            #     order_by=['-ordering']
 
-            )
+            # )
+
+            queryset = SeasonalApartment.objects.raw(f'''
+            select 
+                ss.* 
+            from 
+                seasonal_seasonalapartment ss 
+            left join 
+                seasonal_apartmentviews ssv 
+                on  
+                ssv.apartment_id=ss.id 
+            where 
+                ss.is_checked=true 
+                or 
+                ssv.user_id={user.id} 
+            order by (
+                case
+                    when ssv.create_at is null 
+                        then ss.create_at 
+                    else ssv.create_at 
+                end
+                ) desc;
+            ''')
+
             return queryset
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
