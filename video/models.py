@@ -70,9 +70,9 @@ class Video(models.Model):
                                        related_name='favorites')
     likes = models.ManyToManyField(settings.AUTH_USER_MODEL, name='likes')
     # video = models.FileField(upload_to='media/videos/%Y/%m/%d/', verbose_name="Ютуб ссылка")
-    video = models.CharField(max_length=255, null=True,
+    video = models.CharField(max_length=255,
                              verbose_name="Ютуб ссылка",
-                             help_text="Просмотр видео")
+                             help_text="Просмотр видео", error_messages="Вставьте  ютуб ссылку")
     category = models.ForeignKey(Category, on_delete=models.CASCADE,
                                  related_name='videos',
                                  verbose_name="Категория")

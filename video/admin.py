@@ -180,7 +180,6 @@ class Request2Admin(admin.ModelAdmin):
                 Video.objects.create(title=obj.title,
                                     text=obj.text,
                                     phone_1=obj.phone,
-                                    video=obj.video,
                                     is_top=obj.is_top,
                                     category=obj.category,
                                     image=obj.image,

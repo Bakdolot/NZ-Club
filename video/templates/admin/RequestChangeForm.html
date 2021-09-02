@@ -7,11 +7,10 @@
     <input type="submit" value="Не одобрять" name="disapprove">
 </div>
 <script>
-    const link = document.getElementById('down98')
     function myFunction() {
         if (window.confirm("скачайте видео!")) {
-            link.click()
+            document.getElementById('down98').click()
         }
-    }
+}
 </script>
 {% endblock %}
