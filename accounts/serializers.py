@@ -155,8 +155,8 @@ class TokenPairObtainSerializer(serializers.Serializer):
     default_error_messages = {
         'no_active_account': _(
             'No active account found with the given credentials'),
-        'wrong_password': _('You entered the wrong password'),
-        'wrong_phone_number': _('You entered the wrong phone number')
+        'wrong_password': _('Вы ввели не правельный пароль'),
+        'wrong_phone_number': _('Такого номер телефона не существует')
     }
     phone = serializers.CharField(required=False)
     password = PasswordField()

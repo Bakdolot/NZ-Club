@@ -113,7 +113,7 @@ class ApartmentAdmin(admin.ModelAdmin):
         return []
     
     def download_video(self, obj):
-        return mark_safe(f'<a href="{obj.imvideo_by_userage.url}" download >скачать</a>')
+        return mark_safe(f'<a href="{obj.video_by_user.url}" id="down98" download >скачать</a>')
 
     def download_img(self, obj):
         return mark_safe(f'<a href="{obj.cover_image.url}" download >скачать</a>')
