@@ -199,7 +199,7 @@ class Request2Admin(admin.ModelAdmin):
         return f'{obj.owner.profile.get_region_display()}'
 
     def download_video(self, obj):
-        return mark_safe(f'<a href="{obj.video_by_user.url}" id="down98" download >скачать</a>')
+        return mark_safe(f'<a href="{obj.video.url}" id="down98" download >скачать</a>')
 
     download_video.short_description = 'скачать видео'
     get_owner_region.short_description = 'Регион'

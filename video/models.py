@@ -226,7 +226,7 @@ class Request2(models.Model):
     text = models.TextField(verbose_name="Описание")
     phone = models.CharField(max_length=16, null=True, blank=True,
                                verbose_name="Телефон номер 1")
-    video = models.FileField(upload_to='videos_uploaded', blank=True, null=True,
+    video = models.FileField(upload_to='videos_uploaded',
                                 validators=[FileExtensionValidator(
                                     allowed_extensions=['MOV', 'avi', 'mp4', 'webm', 'mkv'])])
     is_top = models.BooleanField(default=False, verbose_name="Топ")
