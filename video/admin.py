@@ -160,7 +160,7 @@ class FAQAdmin(admin.ModelAdmin):
 @admin.register(Request2)
 class Request2Admin(admin.ModelAdmin):
     list_display = ['owner', 'title', 'category', 'status',]
-    readonly_fields = ['create_at',]
+    readonly_fields = ['create_at', 'download_video']
     list_display_links = ['owner', 'title', 'category']
     search_fields = ['title', 'text']
     list_filter = ['owner__username']
@@ -198,13 +198,17 @@ class Request2Admin(admin.ModelAdmin):
     def get_owner_region(self, obj):
         return f'{obj.owner.profile.get_region_display()}'
 
+    def download_video(self, obj):
+        return mark_safe(f'<a href="{obj.video_by_user.url}" id="down98" download >скачать</a>')
+
+    download_video.short_description = 'скачать видео'
     get_owner_region.short_description = 'Регион'
 
     def get_fields(self, request, obj=None):
         if request.user.is_superuser:
-            return ['title', 'text', 'phone', 'video', 'is_top', 'category', 'image', 'create_at', 'status', 'owner']
+            return ['title', 'text', 'phone', ('video', 'download_video'), 'is_top', 'category', 'image', 'create_at', 'status', 'owner']
         else:
-            return ['title', 'text', 'phone', 'video', 'category', 'image', 'owner', 'create_at']
+            return ['title', 'text', 'phone', ('video', 'download_video'), 'category', 'image', 'owner', 'create_at']
 
 
 @admin.register(ViewHistory)
