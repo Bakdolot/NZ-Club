@@ -135,22 +135,6 @@ class ReceiveTransferView(viewsets.generics.UpdateAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class TransferHistoryUserView2(viewsets.generics.ListAPIView):
-    serializer_class = TransferHistorySerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = TransferHistoryUserFilter
-
-    def get_queryset(self):
-        user = get_user_model().objects.get(id=self.kwargs['user_id'])
-        if user:
-            queryset = Transfer.objects.filter(
-                Q(sender=self.kwargs['user_id']) | Q(
-                    receiver=user.username)).order_by('-create_at')
-            return queryset
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
 class TransferHistoryUserView(viewsets.generics.ListAPIView):
     serializer_class = TransferHistorySerializer
 

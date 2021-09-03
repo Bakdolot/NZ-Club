@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils import timezone
 from django.db import models
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
@@ -72,7 +73,7 @@ class Video(models.Model):
     # video = models.FileField(upload_to='media/videos/%Y/%m/%d/', verbose_name="Ютуб ссылка")
     video = models.CharField(max_length=255,
                              verbose_name="Ютуб ссылка",
-                             help_text="Просмотр видео", error_messages="Вставьте  ютуб ссылку")
+                             help_text="Просмотр видео")
     category = models.ForeignKey(Category, on_delete=models.CASCADE,
                                  related_name='videos',
                                  verbose_name="Категория")
@@ -129,7 +130,7 @@ class Video(models.Model):
 class VideoViews(models.Model):
     video = models.ForeignKey(Video, related_name='videos', verbose_name="Видео", on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Пользователь')
-    create_at = models.DateTimeField(auto_now_add=True)
+    create_at = models.DateTimeField(default=timezone.now())
 
     class Meta:
         verbose_name = _("Просмотры")
