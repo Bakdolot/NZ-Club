@@ -1,6 +1,6 @@
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status
+from rest_framework import status, pagination
 from rest_framework.generics import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -20,6 +20,7 @@ import hashlib
 class StoriesView(ListAPIView):
     serializer_class = StoriesSerializer
     queryset = Stories.objects.all()
+    pagination_class = pagination.LimitOffsetPagination
 
 
 class UserWatchedStoriesView(UpdateAPIView):
