@@ -4,6 +4,7 @@ from django.http.response import HttpResponseRedirect
 from accounts.models import User
 from video.models import *
 from adminsortable2.admin import SortableAdminMixin
+from django.contrib import messages
 
 
 class TariffInline(admin.TabularInline):
@@ -51,11 +52,16 @@ class VideoAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             video = Video.objects.get(id=obj.id)
             if 'approve' in request.POST:
+                if video.video == 'null':
+                    self.message_user(request, 'Вставьте ютуб ссылку в поле "Ютуб ссылка"', level=messages.ERROR)
+                    return HttpResponseRedirect('.')
                 video.status, video.is_active = '2', True
                 video.save()
                 self.message_user(request, 'Видео активна')
                 return HttpResponseRedirect('.')
             elif 'disapprove' in request.POST:
+                if not obj.video:
+                    video.video, video.type = 'null', '1'
                 video.status, video.is_active = '1', False
                 video.save()
                 self.message_user(request, 'Видео отключен')
