@@ -70,6 +70,7 @@ class CreateTransferView(viewsets.generics.UpdateAPIView):
                     receiver=request.data['username'],
                     code=request.data['code'],
                     amount=request.data['amount'],
+                    is_paid = True
                 )
                 receiver = get_user_model().objects.get(
                     username=request.data['username'])
@@ -153,10 +154,7 @@ class TransferHistoryUserView(viewsets.generics.ListAPIView):
 
 class TransferHistoryDetailView(viewsets.generics.RetrieveAPIView):
     serializer_class = TransferHistorySerializer
-
-    def get_queryset(self):
-        queryset = get_object_or_404(Transfer, pk=self.kwargs['trans_id'])
-        return queryset
+    queryset = Transfer.objects.all()
 
 
 class CashBoxHistoryUserView(viewsets.generics.ListAPIView):
@@ -237,6 +235,7 @@ class CreateDonateTransferView(APIView):
                 sender=user,
                 receiver=request.data['username'],
                 amount=request.data['amount'],
+                is_paid = True
             )
             device = FCMDevice.objects.filter(user=video.owner)
             device_sender = FCMDevice.objects.filter(user=user)

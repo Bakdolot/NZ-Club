@@ -130,7 +130,7 @@ class Video(models.Model):
 class VideoViews(models.Model):
     video = models.ForeignKey(Video, related_name='videos', verbose_name="Видео", on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Пользователь')
-    create_at = models.DateTimeField(default=timezone.now())
+    create_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = _("Просмотры")

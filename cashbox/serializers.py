@@ -122,6 +122,7 @@ class CreateDonateForCompanySerializer(serializers.ModelSerializer):
             sender=user,
             receiver=request.data['username'],
             amount=request.data['amount'],
+            is_paid = True,
         )
         device = FCMDevice.objects.filter(user=nz_club)
         device_sender = FCMDevice.objects.filter(user=user)
