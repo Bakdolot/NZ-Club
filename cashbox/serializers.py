@@ -120,7 +120,7 @@ class CreateDonateForCompanySerializer(serializers.ModelSerializer):
         nz_club.profile.save()
         transfer = Transfer.objects.create(
             sender=user,
-            receiver=request.data['username'],
+            receiver="NZ CLub",
             amount=request.data['amount'],
             is_paid = True,
         )
