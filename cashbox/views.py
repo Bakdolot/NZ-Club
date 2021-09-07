@@ -233,7 +233,7 @@ class CreateDonateTransferView(APIView):
             video.owner.profile.save()
             Transfer.objects.create(
                 sender=user,
-                receiver=request.data['username'],
+                receiver=video.owner.username,
                 amount=request.data['amount'],
                 is_paid = True
             )
