@@ -242,11 +242,12 @@ class UserFullyWatchedView(viewsets.generics.UpdateAPIView):
             if request.data['view']:
                 bonus = 0
                 for item in video.tariffs.all():
-                    if item.views > video.watched_videos.count():
+                    if item.views >= video.watched_videos.count():
                         bonus = item.price
                         break
 
-                if user not in video.watched_videos.all():
+                is_watched = video.watched_videos.filter(user_id=user.id).exists()
+                if not is_watched:
                     ViewHistory.objects.create(
                         user=user,
                         bonus=bonus,
@@ -256,12 +257,13 @@ class UserFullyWatchedView(viewsets.generics.UpdateAPIView):
                     profile.balance = profile.balance + bonus
                     profile.view_count = profile.view_count + 1
                     profile.save()
+                    VideoViews.objects.create(user=user, video=video)
+                    video.watched_videos.add(user)
+                    video.save()
 
                 if bonus == 0:
                     video.is_top = False
-                VideoViews.objects.create(user=user, video=video)
-                video.watched_videos.add(user)
-                video.save()
+                
 
             if request.data['favorite']:
                 video.favorites.add(user)
