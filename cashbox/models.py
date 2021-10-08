@@ -72,3 +72,17 @@ class DonateTransfer(models.Model):
         verbose_name = _("Благотворительный перевод")
         verbose_name_plural = _("Блалготворительные переводы")
         ordering = ('-created',)
+
+
+class Pay24History(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='Pay24_user')
+    sum = models.FloatField(default=0, verbose_name="Сумма")
+    create_at = models.DateTimeField(verbose_name=_('Дата'), auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f'{self.user} -> {self.sum}'
+    
+    class Meta:
+        verbose_name = _("История оплаты Pay24")
+        verbose_name_plural = _("Истории оплаты Pay24")
+        ordering = ('-create_at',)
