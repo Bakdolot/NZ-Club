@@ -1,9 +1,10 @@
 from datetime import timedelta
+import hashlib
 
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import pagination
 from rest_framework.views import APIView
 from rest_framework import filters
@@ -361,7 +362,8 @@ class BookingServicesRequestView(GenericAPIView):
                 'recipient': settings.PAYMENT_RECIPIENT,
                 'payment_id': payment_id,
                 'comment': data['comment'],
-                'count': data['total_price']
+                'count': data['total_price'],
+                'url': 'booking_service/request/'
                 })
             booking.payment_id = payment_id
             booking.save()
@@ -397,7 +399,8 @@ class BookingProductsRequestView(GenericAPIView):
                 'recipient': settings.PAYMENT_RECIPIENT,
                 'payment_id': payment_id,
                 'comment': data['comment'],
-                'count': data['total_price']
+                'count': data['total_price'],
+                'url': 'booking_product/request/'
                 })
             booking.payment_id = payment_id
             booking.save()
@@ -415,6 +418,62 @@ class BookingProductsRequestView(GenericAPIView):
             user_prof.withdrawn_balance += total_price
             user_prof.save()
         return Response(serializer.data, status.HTTP_201_CREATED)
+
+
+class BookingServiceNotification(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        list_ob = [
+            str(data['notification_type']),
+            str(data['operation_id']),
+            str(data['amount']),
+            str(data['currency']),
+            str(data['datetime']),
+            str(data['sender']),
+            str(data['codepro']),
+            settings.NOTIFICATION_SECRET,
+            str(data['label'])
+        ]
+        hash1 = hashlib.sha1(bytes("&".join(list_ob), 'utf-8'))
+        pbhash = hash1.hexdigest()
+        if data['sha1_hash'] != pbhash:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        query = BookingServices.objects.filter(accept=False)
+        query = get_object_or_404(query, payment_id=data['label'])
+        query.accept = True
+        query.total_price = data['amount']
+        query.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+class BookingProductNotification(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        list_ob = [
+            str(data['notification_type']),
+            str(data['operation_id']),
+            str(data['amount']),
+            str(data['currency']),
+            str(data['datetime']),
+            str(data['sender']),
+            str(data['codepro']),
+            settings.NOTIFICATION_SECRET,
+            str(data['label'])
+        ]
+        hash1 = hashlib.sha1(bytes("&".join(list_ob), 'utf-8'))
+        pbhash = hash1.hexdigest()
+        if data['sha1_hash'] != pbhash:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        query = BookingProducts.objects.filter(accept=False)
+        query = get_object_or_404(query, payment_id=data['label'])
+        query.accept = True
+        query.total_price = data['amount']
+        query.save()
+        return Response(status=status.HTTP_200_OK)
 
 
 class CreateRequest2View(CreateAPIView):
