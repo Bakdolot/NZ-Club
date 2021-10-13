@@ -123,10 +123,10 @@ class BookingRequestAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'entry_date', 'get_video_name','service', 'phone', 'accept']
     list_display_links = ['id', 'user', 'entry_date', 'service', 'phone', 'accept']
 
-    def get_apartment_name(self, obj):
+    def get_video_name(self, obj):
         return obj.service.video
 
-    get_apartment_name.short_description = 'названия видео'
+    get_video_name.short_description = 'названия видео'
 
 
 @admin.register(BookingProducts)
@@ -134,10 +134,10 @@ class BookingRequestAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'entry_date', 'get_video_name','product', 'phone', 'accept']
     list_display_links = ['id', 'user', 'entry_date', 'product', 'phone', 'accept']
 
-    def get_apartment_name(self, obj):
+    def get_video_name(self, obj):
         return obj.product.video
 
-    get_apartment_name.short_description = 'названия видео'
+    get_video_name.short_description = 'названия видео'
 
 
 @admin.register(MyVideo)
