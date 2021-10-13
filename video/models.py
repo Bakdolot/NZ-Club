@@ -151,7 +151,7 @@ class Services(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Название'))
     description = models.TextField(verbose_name=_('Описание'))
     price = models.FloatField(verbose_name=_('Цена'))
-    video = models.ForeignKey('Video', related_name='video', verbose_name=_('Видео'),
+    video = models.ForeignKey('Video', related_name='video_service', verbose_name=_('Видео'),
                                   on_delete=models.CASCADE)
 
     class Meta:
@@ -177,7 +177,7 @@ class BookingServices(models.Model):
     kids_count = models.IntegerField(verbose_name=_('Количество детей'))
     total_price = models.DecimalField(max_digits=7, decimal_places=2, verbose_name=_('Сумма брони'))
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE, related_name='booking_user',
+                             on_delete=models.CASCADE, related_name='booking_service_user',
                              verbose_name="Пользователь")
     accept = models.BooleanField(default=False)
     type = models.CharField(choices=TYPE_CHOICES, max_length=100)
@@ -201,7 +201,7 @@ class BookingProducts(models.Model):
     comment = models.TextField(verbose_name=_('Коментарий'))
     total_price = models.DecimalField(max_digits=7, decimal_places=2, verbose_name=_('Сумма в общем'))
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE, related_name='booking_user',
+                             on_delete=models.CASCADE, related_name='booking_product_user',
                              verbose_name="Пользователь")
     accept = models.BooleanField(default=False)
     type = models.CharField(choices=TYPE_CHOICES, max_length=100)

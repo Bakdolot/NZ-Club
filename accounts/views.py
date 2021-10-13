@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenViewBase
 from .permissions import IsOwnerProfileOrReadOnly
 from .serializers import *
-from ..cashbox.models import Pay24History
+from cashbox.models import Pay24History
 from django.contrib.auth import get_user_model
 from django.utils.encoding import force_text
 from rest_framework.response import Response
