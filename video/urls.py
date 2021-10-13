@@ -29,5 +29,9 @@ urlpatterns = [
     path('video/update/put_first', UpVideoInSevenDayView.as_view()),
     path('create/comment', CreateCommentView.as_view()),
     path('create/request', CreateRequest2View.as_view()),
-    path('filter/', VideoFilterView.as_view())
+    path('filter/', VideoFilterView.as_view()),
+    path('apartment/request/room/', VideoRequestServiceView.as_view()),
+    path('apartment/room/list/<int:apartment_id>', VideoServiceListView.as_view()),
+    path('booking/service_request/', BookingServicesRequestView.as_view()),
+    path('booking/product_request/', BookingProductsRequestView.as_view()),
 ]

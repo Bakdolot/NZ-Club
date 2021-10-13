@@ -326,7 +326,7 @@ class CreateRequestView(viewsets.generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class ServiceRequestRoomView(CreateAPIView):
+class VideoRequestServiceView(CreateAPIView):
     serializer_class = ServiceSerializer
     queryset = Services.objects.all()
 
@@ -338,7 +338,7 @@ class ServiceRequestRoomView(CreateAPIView):
         return Response(serializer.data, status.HTTP_201_CREATED)
 
 
-class ApartmentRoomListView(ListAPIView):
+class VideoServiceListView(ListAPIView):
     serializer_class = ServiceSerializer
 
     def get_queryset(self):
