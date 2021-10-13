@@ -13,6 +13,9 @@ from video.models import *
 from rest_framework.generics import *
 from django.db.models import Q
 from django_filters import rest_framework
+from django.core.management.utils import get_random_secret_key
+from django.template.loader import render_to_string
+from accounts.models import userProfile
 
 
 # list get API
@@ -321,6 +324,97 @@ class CreateCommentView(viewsets.generics.CreateAPIView):
 class CreateRequestView(viewsets.generics.CreateAPIView):
     serializer_class = CreateRequestSerializer
     permission_classes = [IsAuthenticated]
+
+
+class ServiceRequestRoomView(CreateAPIView):
+    serializer_class = ServiceSerializer
+    queryset = Services.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status.HTTP_201_CREATED)
+
+
+class ApartmentRoomListView(ListAPIView):
+    serializer_class = ServiceSerializer
+
+    def get_queryset(self):
+        return Services.objects.filter(video_id=self.kwargs['video_id'])
+
+
+class BookingServicesRequestView(GenericAPIView):
+    serializer_class = BookingServiceRequestSerializer
+    queryset = BookingServices.objects.all()
+
+    def post(self, request):
+        serializer = self.get_serializer(data=self.request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=self.request.user)
+        data = request.data
+        if 'card' == data['type']:
+            booking = BookingServices.objects.get(id=serializer.data['id'])
+            payment_id = get_random_secret_key()
+            g = render_to_string('yoomoney.html', {
+                'recipient': settings.PAYMENT_RECIPIENT,
+                'payment_id': payment_id,
+                'comment': data['comment'],
+                'count': data['total_price']
+                })
+            booking.payment_id = payment_id
+            booking.save()
+            return Response({
+                'Booking request': serializer.data,
+                'Payment': g
+            })
+        elif 'point' == data['type']:
+            user = get_user_model().objects.get(id=request.user.id)
+            user_prof = userProfile.objects.get(user=user)
+            total_price = float(data['total_price'])
+            if total_price > user_prof.balance:
+                return Response({'enough points': "you don't have enough points"})
+            user_prof.balance -= total_price
+            user_prof.withdrawn_balance += total_price
+            user_prof.save()
+        return Response(serializer.data, status.HTTP_201_CREATED)
+
+
+class BookingProductsRequestView(GenericAPIView):
+    serializer_class = BookingProductRequestSerializer
+    queryset = BookingServices.objects.all()
+
+    def post(self, request):
+        serializer = self.get_serializer(data=self.request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=self.request.user)
+        data = request.data
+        if 'card' == data['type']:
+            booking = BookingProducts.objects.get(id=serializer.data['id'])
+            payment_id = get_random_secret_key()
+            g = render_to_string('yoomoney.html', {
+                'recipient': settings.PAYMENT_RECIPIENT,
+                'payment_id': payment_id,
+                'comment': data['comment'],
+                'count': data['total_price']
+                })
+            booking.payment_id = payment_id
+            booking.save()
+            return Response({
+                'Booking request': serializer.data,
+                'Payment': g
+            })
+        elif 'point' == data['type']:
+            user = get_user_model().objects.get(id=request.user.id)
+            user_prof = userProfile.objects.get(user=user)
+            total_price = float(data['total_price'])
+            if total_price > user_prof.balance:
+                return Response({'enough points': "you don't have enough points"})
+            user_prof.balance -= total_price
+            user_prof.withdrawn_balance += total_price
+            user_prof.save()
+        return Response(serializer.data, status.HTTP_201_CREATED)
 
 
 class CreateRequest2View(CreateAPIView):

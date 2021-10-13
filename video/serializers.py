@@ -192,6 +192,24 @@ class ViewsDetailVideoSerializer(serializers.ModelSerializer):
         fields = ['get_views_count']
 
 
+class ServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Services
+        fields = '__all__'
+
+
+class BookingServiceRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookingServices
+        exclude = ('user',)
+
+
+class BookingProductRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookingProducts
+        exclude = ('user',)
+
+
 class CommentsDetailVideoSerializer(serializers.ModelSerializer):
     comments = CommentDetailSerializer(many=True)
 

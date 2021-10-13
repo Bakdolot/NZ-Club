@@ -7,6 +7,22 @@ from adminsortable2.admin import SortableAdminMixin
 from django.contrib import messages
 
 
+class ServiceInline(admin.TabularInline):
+    model = Services
+
+    def has_add_permission(self, request, obj):
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        return True
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+    def has_view_permission(self, request, obj=None):
+        return True
+
+
 class TariffInline(admin.TabularInline):
     model = Tariff
 
@@ -35,7 +51,7 @@ class VideoAdmin(admin.ModelAdmin):
     list_per_page = 50
     autocomplete_fields = ['owner']
     # list_editable = ['status', ]
-    inlines = [TariffInline]
+    inlines = [ServiceInline, TariffInline]
     change_form_template = 'admin/changeform.html'
     save_on_top = True
 
@@ -100,6 +116,30 @@ class VideoAdmin(admin.ModelAdmin):
             obj.status = '3'
             obj.is_active = False
             super().save_model(request, obj, form, change)
+
+
+@admin.register(BookingServices)
+class BookingRequestAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'entry_date', 'get_video_name','service', 'phone', 'accept']
+    list_display_links = list_display
+    readonly_fields = ['get_video_name']
+
+    def get_apartment_name(self, obj):
+        return obj.service.video
+
+    get_apartment_name.short_description = 'названия видео'
+
+
+@admin.register(BookingProducts)
+class BookingRequestAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'entry_date', 'get_video_name','product', 'phone', 'accept']
+    list_display_links = list_display
+    readonly_fields = ['get_video_name']
+
+    def get_apartment_name(self, obj):
+        return obj.product.video
+
+    get_apartment_name.short_description = 'названия видео'
 
 
 @admin.register(MyVideo)

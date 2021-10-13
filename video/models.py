@@ -147,6 +147,71 @@ def delete_image(sender, instance, **kwargs):
     instance.image.delete(False)
 
 
+class Services(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Название'))
+    description = models.TextField(verbose_name=_('Описание'))
+    price = models.FloatField(verbose_name=_('Цена'))
+    video = models.ForeignKey('Video', related_name='video', verbose_name=_('Видео'),
+                                  on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'Услуга'
+        verbose_name_plural = 'Услуги'
+
+    def __str__(self):
+        return self.name
+
+
+class BookingServices(models.Model):
+    TYPE_CHOICES = (
+        ('card', 'card'),
+        ('point', 'point')
+    )
+
+    entry_date = models.DateTimeField(default=datetime.now, verbose_name=_('Дата въезда'))
+    service = models.ForeignKey('Services', related_name='service', verbose_name=_('Услуга'),
+                             on_delete=models.CASCADE)
+    phone = models.CharField(max_length=12, verbose_name=_('Номер телефона'))
+    comment = models.TextField(verbose_name=_('Коментарий'))
+    adult_count = models.IntegerField(verbose_name=_('Количество взрослых'))
+    kids_count = models.IntegerField(verbose_name=_('Количество детей'))
+    total_price = models.DecimalField(max_digits=7, decimal_places=2, verbose_name=_('Сумма брони'))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE, related_name='booking_user',
+                             verbose_name="Пользователь")
+    accept = models.BooleanField(default=False)
+    type = models.CharField(choices=TYPE_CHOICES, max_length=100)
+    payment_id = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        verbose_name = _('Заявка рестаранов и услуг')
+        verbose_name_plural = _('Заявки рестаранов и услуг')
+
+
+class BookingProducts(models.Model):
+    TYPE_CHOICES = (
+        ('card', 'card'),
+        ('point', 'point')
+    )
+
+    entry_date = models.DateTimeField(default=datetime.now, verbose_name=_('Дата въезда'))
+    product = models.ForeignKey('Services', related_name='product', verbose_name=_('Товар'),
+                             on_delete=models.CASCADE)
+    phone = models.CharField(max_length=12, verbose_name=_('Номер телефона'))
+    comment = models.TextField(verbose_name=_('Коментарий'))
+    total_price = models.DecimalField(max_digits=7, decimal_places=2, verbose_name=_('Сумма в общем'))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE, related_name='booking_user',
+                             verbose_name="Пользователь")
+    accept = models.BooleanField(default=False)
+    type = models.CharField(choices=TYPE_CHOICES, max_length=100)
+    payment_id = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        verbose_name = _('Заявка на покупку товара')
+        verbose_name_plural = _('Заявки на покупки товаров')
+
+
 class MyVideo(Video):
     class Meta:
         verbose_name = "Видео для неактивных"
