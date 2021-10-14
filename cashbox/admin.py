@@ -1,18 +1,19 @@
 from django.contrib import admin
 
+from django.contrib.admin import DateFieldListFilter
+
 from cashbox.models import *
 
 
 class Pay24HistoryAdmin(admin.ModelAdmin):
-    list_display = ['user', 'sum', 'create_at', 'get_all_sum']
-    readonly_fields = ['get_all_sum']
+    list_display = ['user', 'sum', 'create_at']
+    change_list_template  = 'admin/custom_change_list.html'
+    list_filter = (('create_at', DateFieldListFilter),)
 
-    def get_all_sum(self, obj):
-        query = Pay24History.objects.filter(user=obj.user).values_list('sum', flat=True)
-        return sum(query)
-    
-    get_all_sum.short_description = 'Сумма всех пополнений'
-    
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['hello'] = request.GET or 'Hello World'
+        return super().changelist_view(request, extra_context=extra_context)
 
 
 class CashBoxAdmin(admin.ModelAdmin):
