@@ -1,7 +1,7 @@
 from datetime import timedelta
 import hashlib
 
-from rest_framework import viewsets
+from rest_framework import request, viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -346,7 +346,7 @@ class VideoServiceListView(ListAPIView):
         return Services.objects.filter(video_id=self.kwargs['video_id'])
 
 
-class BookingServicesRequestView(GenericAPIView):
+class BookingRequestView(GenericAPIView):
     serializer_class = BookingServiceRequestSerializer
     queryset = BookingServices.objects.all()
 
@@ -355,8 +355,8 @@ class BookingServicesRequestView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save(user=self.request.user)
         data = request.data
+        booking = BookingServices.objects.get(id=serializer.data['id'])
         if 'card' == data['type']:
-            booking = BookingServices.objects.get(id=serializer.data['id'])
             payment_id = get_random_secret_key()
             g = render_to_string('yoomoney.html', {
                 'recipient': settings.PAYMENT_RECIPIENT,
@@ -380,43 +380,8 @@ class BookingServicesRequestView(GenericAPIView):
             user_prof.balance -= total_price
             user_prof.withdrawn_balance += total_price
             user_prof.save()
-        return Response(serializer.data, status.HTTP_201_CREATED)
-
-
-class BookingProductsRequestView(GenericAPIView):
-    serializer_class = BookingProductRequestSerializer
-    queryset = BookingServices.objects.all()
-
-    def post(self, request):
-        serializer = self.get_serializer(data=self.request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(user=self.request.user)
-        data = request.data
-        if 'card' == data['type']:
-            booking = BookingProducts.objects.get(id=serializer.data['id'])
-            payment_id = get_random_secret_key()
-            g = render_to_string('yoomoney.html', {
-                'recipient': settings.PAYMENT_RECIPIENT,
-                'payment_id': payment_id,
-                'comment': data['comment'],
-                'count': data['total_price'],
-                'url': 'booking_product/request/'
-                })
-            booking.payment_id = payment_id
+            booking.accept = True
             booking.save()
-            return Response({
-                'Booking request': serializer.data,
-                'Payment': g
-            })
-        elif 'point' == data['type']:
-            user = get_user_model().objects.get(id=request.user.id)
-            user_prof = userProfile.objects.get(user=user)
-            total_price = float(data['total_price'])
-            if total_price > user_prof.balance:
-                return Response({'enough points': "you don't have enough points"})
-            user_prof.balance -= total_price
-            user_prof.withdrawn_balance += total_price
-            user_prof.save()
         return Response(serializer.data, status.HTTP_201_CREATED)
 
 
@@ -441,34 +406,6 @@ class BookingServiceNotification(APIView):
         if data['sha1_hash'] != pbhash:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         query = BookingServices.objects.filter(accept=False)
-        query = get_object_or_404(query, payment_id=data['label'])
-        query.accept = True
-        query.total_price = data['amount']
-        query.save()
-        return Response(status=status.HTTP_200_OK)
-
-
-class BookingProductNotification(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request, *args, **kwargs):
-        data = request.data
-        list_ob = [
-            str(data['notification_type']),
-            str(data['operation_id']),
-            str(data['amount']),
-            str(data['currency']),
-            str(data['datetime']),
-            str(data['sender']),
-            str(data['codepro']),
-            settings.NOTIFICATION_SECRET,
-            str(data['label'])
-        ]
-        hash1 = hashlib.sha1(bytes("&".join(list_ob), 'utf-8'))
-        pbhash = hash1.hexdigest()
-        if data['sha1_hash'] != pbhash:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        query = BookingProducts.objects.filter(accept=False)
         query = get_object_or_404(query, payment_id=data['label'])
         query.accept = True
         query.total_price = data['amount']

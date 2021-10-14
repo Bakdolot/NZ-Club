@@ -17,10 +17,17 @@ from rest_framework import status
 
 
 class Category(models.Model):
+    TYPE_CHOICES = (
+        ('1', 'Проживание'),
+        ('2', 'Рестораны и услуги'),
+        ('3', 'Товары')
+    )
+
     title = models.CharField(max_length=50, verbose_name="Название")
     image = ResizedImageField(upload_to='category/', verbose_name='Фотография',
                               size=[100, 100])
     order = models.PositiveIntegerField(default=0, blank=True, null=False)
+    type = models.CharField(max_length=15, choices=TYPE_CHOICES)
 
     class Meta:
         verbose_name = _("Категория")
@@ -155,8 +162,8 @@ class Services(models.Model):
                                   on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = 'Услуга'
-        verbose_name_plural = 'Услуги'
+        verbose_name = 'Услуга и товар'
+        verbose_name_plural = 'Услуги и товары'
 
     def __str__(self):
         return self.name
@@ -172,9 +179,9 @@ class BookingServices(models.Model):
     service = models.ForeignKey('Services', related_name='service', verbose_name=_('Услуга'),
                              on_delete=models.CASCADE)
     phone = models.CharField(max_length=12, verbose_name=_('Номер телефона'))
-    comment = models.TextField(verbose_name=_('Коментарий'))
-    adult_count = models.IntegerField(verbose_name=_('Количество взрослых'))
-    kids_count = models.IntegerField(verbose_name=_('Количество детей'))
+    comment = models.TextField(verbose_name=_('Коментарий'), blank=True)
+    adult_count = models.IntegerField(verbose_name=_('Количество взрослых'), blank=True)
+    kids_count = models.IntegerField(verbose_name=_('Количество детей'), blank=True)
     total_price = models.DecimalField(max_digits=7, decimal_places=2, verbose_name=_('Сумма брони'))
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE, related_name='booking_service_user',
@@ -186,30 +193,6 @@ class BookingServices(models.Model):
     class Meta:
         verbose_name = _('Заявка рестаранов и услуг')
         verbose_name_plural = _('Заявки рестаранов и услуг')
-
-
-class BookingProducts(models.Model):
-    TYPE_CHOICES = (
-        ('card', 'card'),
-        ('point', 'point')
-    )
-
-    entry_date = models.DateTimeField(default=datetime.now, verbose_name=_('Дата въезда'))
-    product = models.ForeignKey('Services', related_name='product', verbose_name=_('Товар'),
-                             on_delete=models.CASCADE)
-    phone = models.CharField(max_length=12, verbose_name=_('Номер телефона'))
-    comment = models.TextField(verbose_name=_('Коментарий'))
-    total_price = models.DecimalField(max_digits=7, decimal_places=2, verbose_name=_('Сумма в общем'))
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE, related_name='booking_product_user',
-                             verbose_name="Пользователь")
-    accept = models.BooleanField(default=False)
-    type = models.CharField(choices=TYPE_CHOICES, max_length=100)
-    payment_id = models.CharField(max_length=200, blank=True)
-
-    class Meta:
-        verbose_name = _('Заявка на покупку товара')
-        verbose_name_plural = _('Заявки на покупки товаров')
 
 
 class MyVideo(Video):

@@ -204,12 +204,6 @@ class BookingServiceRequestSerializer(serializers.ModelSerializer):
         exclude = ('user',)
 
 
-class BookingProductRequestSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BookingProducts
-        exclude = ('user',)
-
-
 class CommentsDetailVideoSerializer(serializers.ModelSerializer):
     comments = CommentDetailSerializer(many=True)
 

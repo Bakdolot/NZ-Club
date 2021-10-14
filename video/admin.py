@@ -129,17 +129,6 @@ class BookingRequestAdmin(admin.ModelAdmin):
     get_video_name.short_description = 'названия видео'
 
 
-@admin.register(BookingProducts)
-class BookingRequestAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'entry_date', 'get_video_name','product', 'phone', 'accept']
-    list_display_links = ['id', 'user', 'entry_date', 'product', 'phone', 'accept']
-
-    def get_video_name(self, obj):
-        return obj.product.video
-
-    get_video_name.short_description = 'названия видео'
-
-
 @admin.register(MyVideo)
 class MyVideoAdmin(admin.ModelAdmin):
     list_display = ['owner', 'title', 'category', 'status', 'is_active']
