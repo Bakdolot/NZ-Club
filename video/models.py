@@ -17,17 +17,10 @@ from rest_framework import status
 
 
 class Category(models.Model):
-    TYPE_CHOICES = (
-        ('1', 'Проживание'),
-        ('2', 'Рестораны и услуги'),
-        ('3', 'Товары')
-    )
-
     title = models.CharField(max_length=50, verbose_name="Название")
     image = ResizedImageField(upload_to='category/', verbose_name='Фотография',
                               size=[100, 100])
     order = models.PositiveIntegerField(default=0, blank=True, null=False)
-    type = models.CharField(max_length=15, choices=TYPE_CHOICES)
 
     class Meta:
         verbose_name = _("Категория")
