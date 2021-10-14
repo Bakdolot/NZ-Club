@@ -12,7 +12,10 @@ class Pay24HistoryAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
-        extra_context['hello'] = request.GET or 'Hello World'
+        if request.GET:
+            extra_context['hello'] = sum(Pay24History.objects.filter(create_at__range=[request.GET['create_at__gte'], request.GET['create_at__lt']]).values_list('sum', flat=False))
+        else:
+            extra_context['hello'] = sum(Pay24History.objects.all())
         return super().changelist_view(request, extra_context=extra_context)
 
 
