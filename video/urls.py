@@ -30,8 +30,8 @@ urlpatterns = [
     path('create/comment', CreateCommentView.as_view()),
     path('create/request', CreateRequest2View.as_view()),
     path('filter/', VideoFilterView.as_view()),
-    path('apartment/request/room/', VideoRequestServiceView.as_view()),
-    path('apartment/room/list/<int:apartment_id>', VideoServiceListView.as_view()),
+    path('video/request/service/', VideoRequestServiceView.as_view()),
+    path('video/products/list/<int:video_id>', VideoServiceListView.as_view()),
     path('booking/service_request/', BookingRequestView.as_view()),
     path('booking_service/request/', BookingServiceNotification.as_view())
 ]
