@@ -39,6 +39,29 @@ class TariffInline(admin.TabularInline):
         return True
 
 
+class ImageInline(admin.TabularInline):
+    model = VideoImage
+    fields = (('image', 'download_img'), 'video')
+    readonly_fields = ('download_img', )
+
+    def has_add_permission(self, request, obj):
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        return True
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+    def has_view_permission(self, request, obj=None):
+        return True
+    
+    def download_img(self, obj):
+        return mark_safe(f'<a href="{obj.image.url}" download >скачать</a>')
+
+    download_img.short_description = 'Скачать изображение'
+
+
 @admin.register(Video)
 class VideoAdmin(admin.ModelAdmin):
     list_display = ['owner', 'title', 'category', 'status', 'is_active',
@@ -51,7 +74,7 @@ class VideoAdmin(admin.ModelAdmin):
     list_per_page = 50
     autocomplete_fields = ['owner']
     # list_editable = ['status', ]
-    inlines = [ServiceInline, TariffInline]
+    inlines = [ServiceInline, TariffInline, ImageInline]
     change_form_template = 'admin/changeform.html'
     save_on_top = True
 
@@ -190,6 +213,29 @@ class FAQAdmin(admin.ModelAdmin):
     search_fields = ['question', 'reply']
 
 
+class ImageRequestInline(admin.TabularInline):
+    model = VideoRequestImage
+    fields = ('image', 'video', 'get_img')
+    readonly_fields = ('get_img', )
+
+    def has_add_permission(self, request, obj):
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        return True
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+    def has_view_permission(self, request, obj=None):
+        return True
+    
+    def get_img(self, obj):
+        return mark_safe(f'<img src={obj.image.url} style="width:150px, height:150px" />')
+
+    get_img.short_description = 'изображение'
+
+
 @admin.register(Request2)
 class Request2Admin(admin.ModelAdmin):
     list_display = ['owner', 'title', 'category', 'status',]
@@ -198,6 +244,7 @@ class Request2Admin(admin.ModelAdmin):
     search_fields = ['title', 'text']
     list_filter = ['owner__username']
     change_form_template = 'admin/RequestChangeForm.html'
+    inlines = [ImageRequestInline]
     save_on_top = True
 
     def get_queryset(self, request):
@@ -210,7 +257,7 @@ class Request2Admin(admin.ModelAdmin):
         if request.user.is_superuser:
             req = Request2.objects.get(id=obj.id)
             if 'approve' in request.POST:
-                Video.objects.create(title=obj.title,
+                video = Video.objects.create(title=obj.title,
                                     text=obj.text,
                                     phone_1=obj.phone,
                                     is_top=obj.is_top,
@@ -218,10 +265,19 @@ class Request2Admin(admin.ModelAdmin):
                                     image=obj.image,
                                     owner=obj.owner
                                     )
+                images = VideoRequestImage.objects.filter(video__id=obj.id)
+                if images:
+                    for image in images:
+                        ad_image = VideoImage(video=video, image=image)
+                        ad_image.save()
+                    images.delete()
                 req.delete()
                 self.message_user(request, 'Видео создан')
                 return HttpResponseRedirect('/admin/video/request2/')
             elif 'disapprove' in request.POST:
+                images = VideoRequestImage.objects.filter(video__id=obj.id)
+                if images:
+                    images.delete()
                 req.delete()
                 self.message_user(request, 'Запрос откланен')
                 return HttpResponseRedirect('/admin/video/request2/')

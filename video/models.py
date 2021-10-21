@@ -127,6 +127,16 @@ class Video(models.Model):
             img.save(self.image.path, quality=100, optimize=True)
 
 
+class VideoImage(models.Model):
+    image = models.ImageField(verbose_name=_('Изображение'), upload_to='video/image/')
+    video = models.ForeignKey(Video, verbose_name=_('Видео'),
+                                  related_name='VideoImages', on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = _('Изображение')
+        verbose_name_plural = _('Список изображений')
+
+
 class VideoViews(models.Model):
     video = models.ForeignKey(Video, related_name='videos', verbose_name="Видео", on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Пользователь')
@@ -287,6 +297,12 @@ class Request2(models.Model):
             verbose_name = _("Заявка")
             verbose_name_plural = _("Заявки")
             ordering = ('-create_at',)
+
+
+class VideoRequestImage(models.Model):
+    image = models.ImageField(verbose_name=_('Изображение'), upload_to='video/image/')
+    video = models.ForeignKey(Request2, verbose_name=_('Видео'),
+                                  related_name='VideoRequestImages', on_delete=models.CASCADE)
 
 
 class Banner(models.Model):

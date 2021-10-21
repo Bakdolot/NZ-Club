@@ -187,6 +187,9 @@ class RequestAdmin(admin.ModelAdmin):
                 self.message_user(request, 'Видео создан')
                 return HttpResponseRedirect('/admin/seasonal/request/')
             elif 'disapprove' in request.POST:
+                images = ApartmentRequestImage.objects.filter(apartment__id=obj.id)
+                if images:
+                    images.delete()
                 req.delete()
                 self.message_user(request, 'Запрос откланен')
                 return HttpResponseRedirect('/admin/seasonal/request/')

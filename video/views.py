@@ -420,7 +420,14 @@ class CreateRequest2View(CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(owner=self.request.user)
+        video = serializer.save(owner=self.request.user)
+
+        if request.FILES.getlist('images'):
+            for image in request.FILES.getlist('images'):
+                ad_image = VideoRequestImage(video=video, image=image)
+                ad_image.save()
+        else:
+            return Response({'image': 'This field is required!'}, status.HTTP_403_FORBIDDEN)
 
         return Response(serializer.data, status.HTTP_201_CREATED)
 
