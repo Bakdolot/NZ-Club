@@ -185,6 +185,13 @@ class VideoDetailSerializer(serializers.ModelSerializer):
         depth = True
 
 
+class GetVideoImagesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = VideoImage
+        fields = '__all__'
+
+
 class ViewsDetailVideoSerializer(serializers.ModelSerializer):
 
     class Meta:

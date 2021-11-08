@@ -346,6 +346,13 @@ class VideoServiceListView(ListAPIView):
         return Services.objects.filter(video_id=self.kwargs['video_id'])
 
 
+def GetVideoImagesView(ListAPIView):
+    serializer_class = GetVideoImagesSerializer
+
+    def get_queryset(self):
+        return VideoImage.objects.filter(video_id=self.kwargs['video_id'])
+
+
 class BookingRequestView(GenericAPIView):
     serializer_class = BookingServiceRequestSerializer
     queryset = BookingServices.objects.all()
