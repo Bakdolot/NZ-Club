@@ -83,6 +83,9 @@ class userProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+    def get_region_display():
+        return self.region
 
 
 class Withdrawal(models.Model):
