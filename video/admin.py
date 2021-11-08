@@ -231,7 +231,7 @@ class ImageRequestInline(admin.TabularInline):
         return True
     
     def get_img(self, obj):
-        return mark_safe(f'<img src={obj.image.url} style="width:150px, height:150px" />')
+        return mark_safe(f'<img src={obj.image.url} style="width: 150px; height: fit-content; object-fit: contain;" />')
 
     get_img.short_description = 'изображение'
 
