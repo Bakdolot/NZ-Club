@@ -346,7 +346,7 @@ class VideoServiceListView(ListAPIView):
         return Services.objects.filter(video_id=self.kwargs['video_id'])
 
 
-def GetVideoImagesView(ListAPIView):
+class GetVideoImagesView(ListAPIView):
     serializer_class = GetVideoImagesSerializer
 
     def get_queryset(self):
