@@ -84,7 +84,7 @@ class userProfile(models.Model):
     def __str__(self):
         return self.user.username
     
-    def get_region_display():
+    def get_region_display(self):
         return self.region
 
 
