@@ -22,14 +22,11 @@ class User(AbstractUser):
     USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = ['username']
 
-    def get_profile(self):
-        return userProfile.objects.get(user__id=self.id)
-
     def __str__(self):
-        return f'{self.phone}->{self.username}-> {self.get_profile().get_region_display()}'
+        return f'{self.phone}->{self.username}'
 
     def info(self):
-        return f'{self.phone} -> {self.get_profile().get_region_display()}'
+        return f'{self.phone}'
 
     # def save(self, *args, **kwargs):
     #     try:
