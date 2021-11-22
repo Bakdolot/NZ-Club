@@ -65,3 +65,4 @@ urllib3==1.26.3
 vine==5.0.0
 wcwidth==0.2.5
 zeep==4.0.0
+django-nested-inline

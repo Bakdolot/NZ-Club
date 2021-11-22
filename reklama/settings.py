@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'django_filters',
+    'nested_inline',
     # app
     'accounts.apps.AccountsConfig',
     'video.apps.VideoConfig',

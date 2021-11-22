@@ -5,10 +5,18 @@ from accounts.models import User
 from video.models import *
 from adminsortable2.admin import SortableAdminMixin
 from django.contrib import messages
+from nested_inline.admin import NestedModelAdmin, NestedTabularInline
 
 
-class ServiceInline(admin.TabularInline):
+class ServiceImageInline(NestedTabularInline):
+    model = ServiceImage
+    extra = 1
+
+
+class ServiceInline(NestedTabularInline):
     model = Services
+    extra = 1
+    inlines = [ServiceImageInline]
 
     def has_add_permission(self, request, obj):
         return True
@@ -63,7 +71,7 @@ class ImageInline(admin.TabularInline):
 
 
 @admin.register(Video)
-class VideoAdmin(admin.ModelAdmin):
+class VideoAdmin(NestedModelAdmin):
     list_display = ['owner', 'title', 'category', 'status', 'is_active',
                     'get_owner_region']
     list_select_related = ('owner', 'category')
