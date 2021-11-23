@@ -27,9 +27,9 @@ SECRET_KEY = 'r_xfs@jhym^aza-gxl0u9ivg8ll*k^puy39d4d#d2!k1ykhmb_'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['81.90.180.54', '127.0.0.1', 'localhost', 'nz-club.com',
+ALLOWED_HOSTS = ['95.179.187.55', '127.0.0.1', 'localhost', 'nz-club.com',
                  'www.nz-club.com']
-GLOBAL_HOST = 'http://81.90.180.54'
+GLOBAL_HOST = 'http://95.179.187.55'
 
 # Application definition
 
