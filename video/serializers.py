@@ -317,3 +317,10 @@ class CreateViewBannerHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Request
         fields = ['banner_id', 'user_id']
+
+
+class ServiceImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ServiceImage
+        fields = '__all__'

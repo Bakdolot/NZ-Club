@@ -483,3 +483,8 @@ class DeleteVideoLikeView(APIView):
         video = Video.objects.get(id=kwargs['id'])
         video.likes.remove(user)
         return Response(status.HTTP_204_NO_CONTENT)
+
+
+class VideoProductImagesView(ListAPIView):
+    queryset = ServiceImage.objects.all()
+    serializer_class = ServiceImageSerializer
