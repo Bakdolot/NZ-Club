@@ -11,6 +11,7 @@ from rest_framework import filters
 
 from .serializers import *
 from video.models import *
+from accounts.utils import telegram_bot_sendtext
 from rest_framework.generics import *
 from django.db.models import Q
 from django_filters import rest_framework
@@ -428,6 +429,8 @@ class CreateRequest2View(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         video = serializer.save(owner=self.request.user)
+
+        telegram_bot_sendtext('Пришла новая заявка на видео')
 
         if request.FILES.getlist('images'):
             for image in request.FILES.getlist('images'):

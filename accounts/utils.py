@@ -1,5 +1,6 @@
 from django.conf import settings
 from zeep import Client
+import requests
 from django.utils.translation import ugettext_lazy as _
 
 send_message = Client('http://smspro.nikita.kg/api/soap?wsdl').service.message
@@ -34,3 +35,14 @@ def send_message_code(id, code, phone):
 
     })
     return status_msg_map.get(sms_resp['status'])
+
+
+def telegram_bot_sendtext(bot_message):
+
+   bot_token = settings.BOT_TOKEN
+   bot_chatID = settings.BOT_CHAT_ID
+   send_text = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message
+
+   response = requests.get(send_text)
+
+   return response.json()
