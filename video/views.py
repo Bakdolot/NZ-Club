@@ -488,6 +488,6 @@ class DeleteVideoLikeView(APIView):
         return Response(status.HTTP_204_NO_CONTENT)
 
 
-class VideoProductImagesView(ListAPIView):
-    queryset = ServiceImage.objects.all()
-    serializer_class = ServiceImageSerializer
+# class VideoProductImagesView(ListAPIView):
+#     queryset = ServiceImage.objects.all()
+#     serializer_class = ServiceImageSerializer

@@ -8,15 +8,15 @@ from django.contrib import messages
 from nested_inline.admin import NestedModelAdmin, NestedTabularInline
 
 
-class ServiceImageInline(NestedTabularInline):
-    model = ServiceImage
-    extra = 1
+# class ServiceImageInline(NestedTabularInline):
+#     model = ServiceImage
+#     extra = 1
 
 
 class ServiceInline(NestedTabularInline):
     model = Services
     extra = 1
-    inlines = [ServiceImageInline]
+    # inlines = [ServiceImageInline]
 
     def has_add_permission(self, request, obj):
         return True

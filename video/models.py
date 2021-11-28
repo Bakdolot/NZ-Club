@@ -163,25 +163,25 @@ class Services(models.Model):
     price = models.FloatField(verbose_name=_('Цена'))
     video = models.ForeignKey('Video', related_name='video_service', verbose_name=_('Видео'),
                                   on_delete=models.CASCADE)
-    image = models.ImageField(verbose_name='Изображение товара', upload_to='video/service/')
+    # image = models.ImageField(verbose_name='Изображение товара', upload_to='video/service/')
 
     class Meta:
         verbose_name = 'Услуга и товар'
         verbose_name_plural = 'Услуги и товары'
 
 
-class ServiceImage(models.Model):
-    image = models.ImageField(verbose_name=_('Изображение'), upload_to='video/service/')
-    service = models.ForeignKey(Services, verbose_name=_('Услуга'),
-                                related_name='ServiceImages', on_delete=models.CASCADE)
+# class ServiceImage(models.Model):
+#     image = models.ImageField(verbose_name=_('Изображение'), upload_to='video/service/')
+#     service = models.ForeignKey(Services, verbose_name=_('Услуга'),
+#                                 related_name='ServiceImages', on_delete=models.CASCADE)
 
-    class Meta:
-        verbose_name = _('Изображение')
-        verbose_name_plural = _('Список изображений')
+#     class Meta:
+#         verbose_name = _('Изображение')
+#         verbose_name_plural = _('Список изображений')
 
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
 class BookingServices(models.Model):
