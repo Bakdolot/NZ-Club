@@ -32,7 +32,7 @@ urlpatterns = [
     path('filter/', VideoFilterView.as_view()),
     path('video/request/service/', VideoRequestServiceView.as_view()),
     path('video/images/list/<int:video_id>', GetVideoImagesView.as_view()),
-    # path('video/product/<int:pk>/', VideoProductImagesView.as_view()),
+    path('video/product/<int:pk>/', VideoProductImagesView.as_view()),
     path('video/products/list/<int:video_id>', VideoServiceListView.as_view()),
     path('booking/service_request/', BookingRequestView.as_view()),
     path('booking_service/request/', BookingServiceNotification.as_view())
