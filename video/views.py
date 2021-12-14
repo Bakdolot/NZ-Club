@@ -9,6 +9,7 @@ from rest_framework import pagination
 from rest_framework.views import APIView
 from rest_framework import filters
 
+from .paginations import LargeResultsSetPagination
 from .serializers import *
 from video.models import *
 from accounts.utils import telegram_bot_sendtext
@@ -23,6 +24,7 @@ from accounts.models import userProfile
 class AllVideos(ListAPIView):
     serializer_class = VideoSerializer
     queryset = Video.objects.all()
+    pagination_class = LargeResultsSetPagination
 
 
 # list get API
