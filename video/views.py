@@ -164,21 +164,24 @@ class VideoSearchView(viewsets.generics.ListAPIView):
 class VideoFilterView(ListAPIView):
     serializer_class = VideoSerializer
     permission_classes = ()
+    queryset = Video.objects.all()
     pagination_class = LargeResultsSetPagination
+    filter_backends = [rest_framework.DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['type', 'owner__profile__region']
 
-    def get_queryset(self):
-        type_video = self.request.query_params.get('type_video', '')
-        region = self.request.query_params.get('region')
-        queryset = Video.objects.filter(status='2')
-        if type_video == 'all':
-            pass
-        elif type_video == 'donate':
-            queryset = queryset.filter(type='3')
-        elif type_video == 'vip':
-            queryset = queryset.filter(type='2')
-        if region:
-            queryset = queryset.filter(owner__profile__region=region)
-        return queryset
+    # def get_queryset(self):
+    #     type_video = self.request.query_params.get('type_video', '')
+    #     region = self.request.query_params.get('region')
+    #     queryset = Video.objects.filter(status='2')
+    #     if type_video == 'all':
+    #         pass
+    #     elif type_video == 'donate':
+    #         queryset = queryset.filter(type='3')
+    #     elif type_video == 'vip':
+    #         queryset = queryset.filter(type='2')
+    #     if region:
+    #         queryset = queryset.filter(owner__profile__region=region)
+    #     return queryset
 
 
 class FaqSearchView(viewsets.generics.ListAPIView):
