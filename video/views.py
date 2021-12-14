@@ -45,7 +45,7 @@ class VideosView(viewsets.generics.ListAPIView):
     # filterset_fields = ['type', 'owner__profile__region']
 
 
-    # pagination_class = MyPagination
+    pagination_class = LargeResultsSetPagination
 
     def get_queryset(self):
         user = get_user_model().objects.get(id=self.request.user.id)
