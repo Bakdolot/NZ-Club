@@ -20,6 +20,11 @@ from django.template.loader import render_to_string
 from accounts.models import userProfile
 
 
+class AllVideos(ListAPIView):
+    serializer_class = VideoSerializer
+    queryset = Video.objects.all()
+
+
 # list get API
 class CategoriesView(viewsets.generics.ListAPIView):
     serializer_class = CategorySerializer

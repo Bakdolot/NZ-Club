@@ -3,6 +3,7 @@ from video.views import *
 
 urlpatterns = [
     path('faqs', FAQView.as_view()),
+    path('list/', AllVideos.as_view()),
     path('banners', BannerView.as_view()),
     path('banner/update/user_watched', UserWatchedBannerView.as_view()),
     path('banners/detail/<int:banner_id>', BannerDetailView.as_view()),
