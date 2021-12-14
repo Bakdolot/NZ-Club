@@ -21,12 +21,6 @@ from django.template.loader import render_to_string
 from accounts.models import userProfile
 
 
-class AllVideos(ListAPIView):
-    serializer_class = VideoSerializer
-    queryset = Video.objects.all()
-    pagination_class = LargeResultsSetPagination
-
-
 # list get API
 class CategoriesView(viewsets.generics.ListAPIView):
     serializer_class = CategorySerializer
@@ -170,6 +164,7 @@ class VideoSearchView(viewsets.generics.ListAPIView):
 class VideoFilterView(ListAPIView):
     serializer_class = VideoSerializer
     permission_classes = ()
+    pagination_class = LargeResultsSetPagination
 
     def get_queryset(self):
         type_video = self.request.query_params.get('type_video', '')
