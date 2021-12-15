@@ -494,5 +494,8 @@ class DeleteVideoLikeView(APIView):
 
 
 class VideoProductImagesView(ListAPIView):
-    queryset = ServiceImage.objects.all()
     serializer_class = ServiceImageSerializer
+
+    def get_queryset(self):
+        queryset = ServiceImage.objects.filter(service=self.kwargs.get('pk'))
+        return queryset
