@@ -190,7 +190,7 @@ class BookingServices(models.Model):
         ('point', 'point')
     )
 
-    entry_date = models.DateTimeField(default=datetime.now, verbose_name=_('Дата въезда'))
+    entry_date = models.DateTimeField(default=datetime.now, verbose_name=_('Дата въезда'), blank=True, null=True)
     service = models.ForeignKey('Services', related_name='service', verbose_name=_('Услуга'),
                              on_delete=models.CASCADE)
     phone = models.CharField(max_length=12, verbose_name=_('Номер телефона'))
