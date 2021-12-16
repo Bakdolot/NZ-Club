@@ -206,6 +206,7 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 
 class BookingServiceRequestSerializer(serializers.ModelSerializer):
+    entry_date = serializers.DateTimeField(required=False)
     class Meta:
         model = BookingServices
         exclude = ('user',)
